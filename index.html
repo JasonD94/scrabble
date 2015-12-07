@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <!--
+    File: ~/scrabble_v2.html
+    91.461 Assignment 9: Implementing a Bit of Scrabble with Drag-and-Drop
+    Jason Downing - student at UMass Lowell in 91.461 GUI Programming I
+    Contact: jdowning@cs.uml.edu or jason_downing@student.uml.edu
+    MIT Licensed - see http://opensource.org/licenses/MIT for details.
+    Anyone may freely use this code. Just don't sue me if it breaks stuff.
+    Created: Nov 24, 2015.
+    Last Updated:  Dec 6, 1AM.
+
+    This page is for assignment #9, "Scrabble".
+
+    It will contain a full feature Scrabble game that will do tons of fun stuff
+    like connect to external APIs, make use of the jQuery UI library, and even
+    score / check for valid words / etc.
+
+
+    NOTE ABOUT BOOTSTRAP GRID SYSTEM AND SCREEN RESOLUTIONS:
+    I have modified Bootstrap by custom compiling my own version.
+
+    My version has the following properties:
+    14 column grid system (not 12)
+    col-md activates at 1250px width (not 922px)
+    col-lg activates at 1900px width (not 1200px)
+
+    Compiled at this website: http://getbootstrap.com/customize/?id=78029697512ef0d88bbc
+  -->
+
+
+  <!--
+    Google fonts. Included here at the top for performance gains and to avoid the use of @import
+    like Google recommends here:
+    http://googlewebfonts.blogspot.com/2010/09/optimizing-use-of-google-font-api.html
+
+    Fix for the validator comes from this page (| is encoded as %7C):
+    https://stackoverflow.com/questions/22466913/google-fonts-url-break-html5-validation-on-w3-org
+   -->
+   <link rel="stylesheet" type="text/css"
+   href="http://fonts.googleapis.com/css?family=Advent+Pro%7CBangers%7CSlackey%7CSigmar+One%7CRighteous%7CUbuntu">
+
+  <!--  Configuration -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!--  Custom Title Bar -->
+  <title>Scrabble</title>
+
+  <!-- Custom Bootstrap! 14 grids instead of 12! -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+
+  <!-- Custom theme too! -->
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+  <!-- Sweet Alerts! AWESOME! -->
+  <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
+
+  <!--  CSS file to override stuff, different file so I can modify stuff and rewrite the CSS. -->
+  <link rel="stylesheet" href="css/scrabble_v2.css">
+
+  <!--  Custom favicon - not mine, from this
+        URL: http://orig10.deviantart.net/7bc3/f/2013/338/8/8/flat_scrabble_icon_by_awesomestwinner-d6wpolw.png -->
+  <link rel="shortcut icon" href="img/scrabble.ico" type="image/x-icon">
+</head>
+
+<body>
+  <!-- First row - the Scrabble game board -->
+  <div class="row-fluid">
+
+    <div class="col-sm-14 col-md-5 col-lg-7">
+
+      <div class="center_text_images">
+
+        <h1 class="name">
+          <span class="highlight_fun">SCRABBLE v2.7.1</span>
+        </h1>
+
+        <br>
+
+        <div class="col-sm-7 col-md-7 col-lg-7">
+          <div class="highlight_centered_smaller">LET'S PLAY SOME SCRABBLE!</div>
+          <br>
+        </div>
+
+        <div class="col-sm-7 col-md-7 col-lg-7">
+          <div class="highlight_centered_smaller"><a href="http://scrabble.hasbro.com/en-us/rules/">RULES FOUND HERE.</a></div>
+        </div>
+
+        <div class="col-sm-14 col-md-14 col-lg-14">
+          <div class="highlight_centered">
+            Word: <span id="word">____</span>
+            <div class="divider"></div>
+            Score: <span id="score">0</span>
+          </div>
+        </div>
+
+        <!--
+                Submit word: should verify that the entered word is real through some
+                dictionary or API.
+
+                Reset tiles: should wipe the board for a new game.
+
+                possibly think about adding more rows for Scrabble. (non-trivial)
+
+        -->
+        <div class="col-sm-8 col-md-14 col-lg-14">
+          <!--  Add some vertical spacing between the word/score and the two submit buttons
+                on medium / large devices. -->
+          <div class="space_top"></div>
+          <button onclick="submit_word()">Submit Word</button>
+
+          <!--  Add some horizontal spacing between the three buttons. -->
+          <div class="divider"></div>
+          <button onclick="reset_tiles();">Recall Tiles</button>
+
+          <!--  Add some horizontal spacing between the three buttons. -->
+          <div class="divider"></div>
+          <button onclick="confirm_reset();">Reset Board</button>
+        </div>
+
+        <!-- Error / Success messages appear in this div. -->
+        <div class="col-sm-6 col-md-14 col-lg-14">
+          <div id="messages"></div>
+        </div>
+
+        <!-- Letters Remaining Table -->
+        <div class="col-sm-7 col-md-14 col-lg-14">
+          <!--
+                Table to show the letters remaining in the "Bag" of tiles
+
+                Each row is 9 columns long.
+                The very last row has the blank, "_", as well as an empty cell.
+
+                This is currently hard coded but should be updatable via a JavaScript
+                function. Should be possible to get each row of this table and
+                iterate through the cells and change the inside HTML to say the new
+                letter amount.
+
+                This should also be resetable whenever the game is reset.
+          -->
+          <div class="divider"></div>
+          <table id="letters_remain">
+            <tr>
+              <td class="larger_td" colspan="9">LETTERS REMAINING</td>
+            </tr>
+            <tr>
+              <td class="larger_td">A: 9</td>
+              <td class="larger_td">B: 2</td>
+              <td class="larger_td">C: 2</td>
+              <td class="larger_td">D: 4</td>
+              <td class="larger_td">E: 12</td>
+              <td class="larger_td">F: 2</td>
+              <td class="larger_td">G: 3</td>
+              <td class="larger_td">H: 2</td>
+              <td class="larger_td">I: 9</td>
+            </tr>
+            <tr>
+              <td class="larger_td">J: 1</td>
+              <td class="larger_td">K: 1</td>
+              <td class="larger_td">L: 4</td>
+              <td class="larger_td">M: 2</td>
+              <td class="larger_td">N: 6</td>
+              <td class="larger_td">O: 8</td>
+              <td class="larger_td">P: 2</td>
+              <td class="larger_td">Q: 1</td>
+              <td class="larger_td">R: 6</td>
+            </tr>
+            <tr>
+              <td class="larger_td">S: 2</td>
+              <td class="larger_td">T: 6</td>
+              <td class="larger_td">U: 8</td>
+              <td class="larger_td">V: 2</td>
+              <td class="larger_td">W: 2</td>
+              <td class="larger_td">X: 1</td>
+              <td class="larger_td">Y: 2</td>
+              <td class="larger_td">Z: 1</td>
+              <td class="larger_td">_: 2</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrabble board / Rack are in this column. -->
+    <div class="col-sm-14 col-md-9 col-lg-7">
+      <br><br>
+      <!--
+          Scrabble Game table.
+
+          Important classes:
+
+          double_word     ->  make the word double value
+          triple_word     ->  make the word tripple value
+          double_letter   ->  make the letter double value
+          triple_letter   ->  make the letter tripple value
+
+          If a tile does not have one of those four classes, then it is worth
+          normal value. Double / Tripple word tiles can still increase the
+          value of the word however if any one tile has landed on that space.
+
+          Game board based off of this image of Scrabble:
+          https://farm1.static.flickr.com/23/30997788_a595e9e158_o.jpg
+      -->
+      <div class="center_text_images">
+        <table id="scrabble_board">
+          <!-- First Row -->
+          <tr>
+            <td class="triple_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_word">
+            </td>
+          </tr>
+
+          <!-- Second Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- Third Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 4th Row -->
+          <tr>
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+          </tr>
+
+          <!-- 5th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 6th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 7th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 8th Row -->
+          <tr>
+            <td class="triple_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="star">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+          </tr>
+
+          <!-- 9th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 10th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 11th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 12th Row -->
+          <tr>
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+          </tr>
+
+          <!-- 13th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 14th Row -->
+          <tr>
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_word">
+            </td>
+
+            <td>
+            </td>
+          </tr>
+
+          <!-- 15th Row -->
+          <tr>
+            <td class="triple_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_word">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="double_letter">
+            </td>
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+            <td class="triple_word">
+            </td>
+          </tr>
+        </table>
+      </div>
+      <br>
+
+      <!-- Spacing to force the swap tile over to the right -->
+      <div class="col-sm-1 col-md-2 col-lg-1"></div>
+
+      <div class="col-sm-5 col-md-4 col-lg-5">
+        <!-- Get new tile spot. Moved this right next to the rack for easy swapping of tiles. -->
+        <div id="get_new_tile">
+          <p>Swap a tile for a new one!</p>
+          <p>(drop the tile here)</p>
+        </div>
+      </div>
+
+      <!--
+        Scrabble rack from:
+        https://pixabay.com/static/uploads/photo/2014/07/31/20/48/scrabble-tile-holder-406774_640.png
+
+        NO LONGER USING THIS CLASS. SAVED FOR FUTURE REFERENCE.
+        class="resize_rack"
+      -->
+      <div class="center_text_images">
+        <img id="the_rack" src="img/scrabble/Scrabble_Rack_flat.resized.png">
+        <div id="rack"></div>   <!-- THIS ID IS REQUIRED TO APPEND THE TILES TO. -->
+      </div>
+    </div>
+  </div>        <!-- End of the row-fluid container -->
+
+  <!--
+      These are moved to the bottom of the <body> tag to decrease website load time.
+      This stackoverflow post is helpful for this issue:
+      https://stackoverflow.com/questions/6625773/where-should-i-put-the-css-and-javascript-code-in-an-html-webpage
+
+      See Yahoo's best practice rules as well:
+      https://developer.yahoo.com/performance/rules.html#css_top=
+   -->
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins). -->
+  <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+  <!-- Custom Bootstrap with 14 grid! JavaScript file for it. -->
+  <script type='text/javascript' src="js/bootstrap.min.js"></script>
+
+  <!-- Latest compiled and minified JavaScript -->
+  <!-- <script type='text/javascript' src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
+
+  <!-- jQuery UI Slider and Tab Wigets -->
+  <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+  <!-- Sweet Alerts! Awesome! -->
+  <script src="js/sweetalert.min.js"></script>
+
+  <!-- JS file to handle the scrabble game. -->
+  <script type='text/javascript' src="js/scrabble_v2.js"></script>
+
+  <!-- Load the header/footer when the page is ready. Also load the validate() function -->
+  <script>
+    /*  This code is from a Stackoverflow post about how to load a HTML document
+        into div in another HTML document.
+        I run this on every page I make so I can change 1 HTML file when I add assignments
+        vs changing 7+ HTML files.
+        From the following URLs:
+        https://learn.jquery.com/using-jquery-core/document-ready/
+        https://stackoverflow.com/questions/8988855/include-another-html-file-in-a-html-file
+    */
+    $( document ).ready(function() {
+      load_pieces_array();        // Load up the default pieces array.
+      load_scrabble_pieces();     // Load up the 7 random Scrabble pieces.
+      load_droppable_targets();   // Load up the targets for the Scrabble pieces.
+      update_remaining_table();   // Update the Letters Remaining table.
+      fill_in_table();            // Add special items to the table.
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+/*
+    File: ~/css/json.css
+    91.461 Assignment 5: Formatting Dynamic Text
+    Jason Downing - student at UMass Lowell in 91.461 GUI Programming I
+    Contact: jdowning@cs.uml.edu or jason_downing@student.uml.edu
+    MIT Licensed - see http://opensource.org/licenses/MIT for details.
+    Anyone may freely use this code. Just don't sue me if it breaks stuff.
+    Created: Oct 3, 2015.
+    Last Updated: Oct 5, 10:30PM
+
+    This CSS file is for styling the text that we dynamically load in from
+    the JSON file lyrics.json.
+
+    The margin stuff I figured out in this stackoverflow post. I also played around
+    with margins in the Title / Artist on my own, until I got something that looks
+    decent.
+    https://stackoverflow.com/questions/2787310/how-to-reduce-the-space-between-p-tags
+*/
+
+/* Styles the title of the song */
+.title {
+  background-color: black;
+  color: #FF3300;
+  font-family: "Bangers";
+  font-weight: 400;
+  font-size: 600%;
+  margin-top: 10;             /* Keep spacing between YouTube video, but  not between */
+  margin-bottom: 0;           /* the Title / Artist lines. */
+  text-align: center;
+}
+
+/* Styles the artist of the song */
+.artist {
+  background-color: black;
+  color: #FF9900;
+  font-family: "Slackey";
+  font-weight: 400;
+  font-size: 300%;
+  margin: 0;
+  text-align: center;
+}
+
+/* One of the lyrics that repeats twice in the song. */
+.YEAAH {
+  background-color: black;
+  color: blue;
+  font-family: "Sigmar One";
+  font-weight: 400;
+  font-size: 250%;
+  margin: 0;
+  text-align: center;
+}
+
+/* A couple of sentences that repeat a few times in the song. */
+.hey {
+  background-color: black;
+  color: blue;
+  font-family: "Sigmar One";
+  font-weight: 400;
+  font-size: 250%;
+  margin: 0;
+  text-align: center;
+}
+
+/* I style the three paragraphs at this point. They all have different colors
+   and fonts. I also tweaked the margins on the paragraphs so they appear close
+   together vs having spaces everywhere. */
+.first {
+  background-color: black;
+  color: #006600;
+  font-family: "Righteous";
+  font-weight: 400;
+  font-size: 200%;
+  margin: 0;
+  text-align: center;
+}
+.second {
+  background-color: black;
+  color: #FF9900;
+  font-family: "Righteous";
+  font-weight: 400;
+  font-size: 200%;
+  margin: 0;
+  text-align: center;
+}
+.third {
+  background-color: black;
+  color: #FFFFFF;
+  font-family: "Righteous";
+  font-weight: 400;
+  font-size: 200%;
+  margin: 0;
+  text-align: center;
+}
+
+/* "Sleep now in the fire!" lyrics, turn this red for awesomeness. */
+.sleep {
+  background-color: black;
+  color: red;
+  font-family: "Sigmar One";
+  font-weight: 400;
+  font-size: 300%;
+  margin: 0;
+  text-align: center;
+}
