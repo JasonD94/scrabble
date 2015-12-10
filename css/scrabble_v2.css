@@ -6,7 +6,7 @@
     MIT Licensed - see http://opensource.org/licenses/MIT for details.
     Anyone may freely use this code. Just don't sue me if it breaks stuff.
     Created: Nov 24, 2015.
-    Last Updated: Dec 6, 1AM.
+    Last Updated: Dec 9, 5PM.
 
     This CSS file is for the 9th assignment, "Scrabble".
     Mainly because my Index got way too large.
@@ -85,15 +85,46 @@ html {
   text-align: center;
 }
 
-/**************************************************************************************************************
-    For the Scrabble board
-    Figured this out on Stackoverflow:
-    https://stackoverflow.com/questions/5969114/how-do-i-make-an-image-smaller-with-css
+/*  For the rules page.
+    URL: https://stackoverflow.com/questions/1461015/ul-dont-stay-within-their-containing-divs
 */
+ul {
+  list-style-position: inside;
+  text-align: left;
+  padding-left: 25px;
+  padding-right: 25px;
+}
 
-/* The ID for the Table itself. */
-#scrabble_board {
+/* Same as above for ordered lists. */
+ol {
+  list-style-position: inside;
+  text-align: left;
+  padding-left: 25px;
+  padding-right: 25px;
+}
 
+.left_align_highlight {
+  background-color: black;
+  color: white;
+  font-family: "Ubuntu";
+  font-size: 100%;
+  font-weight: 900;
+  padding-left: 25px;
+  padding-right: 25px;
+  text-align: left;
+}
+
+.under_line {
+  color: red;
+  text-decoration: underline;
+}
+
+/*  From this SO post, although I modified it:
+    https://stackoverflow.com/questions/1571648/html-tab-space-instead-of-multiple-non-breaking-spaces-nbsp */
+.basic_tab {
+  padding-top: 1em;
+  padding-left: 1em;
+  padding-bottom: 1em;
 }
 
 /* Get new tile space CSS */

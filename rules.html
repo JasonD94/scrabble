@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <!--
+    File: ~/rules.html
+    91.461 Assignment 9: Implementing a Bit of Scrabble with Drag-and-Drop
+    Jason Downing - student at UMass Lowell in 91.461 GUI Programming I
+    Contact: jdowning@cs.uml.edu or jason_downing@student.uml.edu
+    MIT Licensed - see http://opensource.org/licenses/MIT for details.
+    Anyone may freely use this code. Just don't sue me if it breaks stuff.
+    Created: Nov 24, 2015.
+    Last Updated:  Dec 5, 5PM.
+
+    This page is for assignment #9, "Scrabble".
+
+    It will contain a full feature Scrabble game that will do tons of fun stuff
+    like connect to external APIs, make use of the jQuery UI library, and even
+    score / check for valid words / etc.
+
+
+    NOTE ABOUT BOOTSTRAP GRID SYSTEM AND SCREEN RESOLUTIONS:
+    I have modified Bootstrap by custom compiling my own version.
+
+    My version has the following properties:
+    14 column grid system (not 12)
+    col-md activates at 1250px width (not 922px)
+    col-lg activates at 1900px width (not 1200px)
+
+    Compiled at this website: http://getbootstrap.com/customize/?id=78029697512ef0d88bbc
+  -->
+
+
+  <!--
+    Google fonts. Included here at the top for performance gains and to avoid the use of @import
+    like Google recommends here:
+    http://googlewebfonts.blogspot.com/2010/09/optimizing-use-of-google-font-api.html
+
+    Fix for the validator comes from this page (| is encoded as %7C):
+    https://stackoverflow.com/questions/22466913/google-fonts-url-break-html5-validation-on-w3-org
+   -->
+   <link rel="stylesheet" type="text/css"
+   href="http://fonts.googleapis.com/css?family=Advent+Pro%7CBangers%7CSlackey%7CSigmar+One%7CRighteous%7CUbuntu">
+
+  <!--  Configuration -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!--  Custom Title Bar -->
+  <title>Scrabble</title>
+
+  <!-- Custom Bootstrap! 14 grids instead of 12! -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+
+  <!-- Custom theme too! -->
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+  <!-- Sweet Alerts! AWESOME! -->
+  <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
+
+  <!--  CSS file to override stuff, different file so I can modify stuff and rewrite the CSS. -->
+  <link rel="stylesheet" href="css/scrabble_v2.css">
+
+  <!--  Custom favicon - not mine, from this
+        URL: http://orig10.deviantart.net/7bc3/f/2013/338/8/8/flat_scrabble_icon_by_awesomestwinner-d6wpolw.png -->
+  <link rel="shortcut icon" href="img/scrabble.ico" type="image/x-icon">
+</head>
+
+<body>
+  <!-- First row - the Scrabble game board -->
+  <div class="row-fluid">
+
+    <div class="col-md-3"></div>    <!-- Adding spacing -->
+    <div class="col-md-8">
+      <div class="center_text_images">
+
+        <h1 class="name">
+          <span class="highlight_fun">SCRABBLE RULES</span>
+        </h1>
+
+        <div class="highlight_centered_smaller"><a href="http://scrabble.hasbro.com/en-us/rules/">Official Scrabble Rules Found Here.</a></div>
+        <div class="highlight_centered_smaller"><p class="under_line">NOTE: NOT ALL OFFICIAL RULES FULLY IMPLEMENTED.</p></div>
+
+        <br>
+
+        <div class="highlight_centered_smaller">
+          <!-- Summary of the Assignment / TO LONG, DIDN'T READ. -->
+          <p class="under_line">Summary - TL;DR</p>
+          <p class="left_align_highlight">I have implemented a full Scrabble board game using HTML, CSS and JavaScript.
+          The game fully supports playing one word, and I have also added support for saving words
+          and continuing to play more of them.</p>
+          <p class="left_align_highlight">There are very few bugs for playing one word – I am
+          able to restrict placement of tiles and where tiles can go. For playing multiple words, I have added
+          some logic to the "droppable.js" file to detect valid positions to add tiles to. Because of the complexity
+          of this logic, it is very possible that bugs will occur when playing multiple words. I highly recommend hitting
+          the "Recall tiles" button should any weird bugs occur, such as letters appearing in the wrong order, or being unable
+          to add onto a word.</p>
+        </div>
+
+        <div class="highlight_centered_smaller">
+          <!-- Rules for Scrabble V2.7.1 -->
+          <p class="under_line">Rules for this implementation of Scrabble</p>
+          <ol>
+            <li>Place your first letter at the SuperMario "Star" at the middle of the page.</li>
+            <li>Add letters in the four allowed directions - up, down, left or right.</li>
+            <li>Continue adding in either the Left/Right direction or Up/Down direction.</li>
+            <li>Hit the "Submit Word" to check and see if a word is valid. Valid words may be saved,
+            invalid words will need to become valid before you may save them.</li>
+            <li>If a word is considered valid, you may press the "Save Word & Play Again" button
+            that appears below the three main buttons ("Submit Word", "Recall Tiles", and "Reset Board")</li>
+            <li>Continue spelling words and saving valid words (See Rules 2 - 5). You may do so until you've used up all your letters,
+            at which point you'll need to reset the game board to keep playing words.</li>
+          </ol>
+
+        </div>
+
+          <br>
+
+        <div class="highlight_centered_smaller">
+          <!-- Features that are present -->
+          <p class="under_line">Features present in this version of Scrabble include:</p>
+          <ul>
+            <li>Playing a single word, along with scoring for basic / double / triple tiles.</li>
+            <li>Playing multiple words, and scoring continues to add with each played word.</li>
+            <li>I have also made it so adding onto a saved word will count those played tiles as part of your word. So if a user plays "Hope" and then
+            adds an "s" to the end of "hope" the displayed word becomes "hopes" and the score updates accordingly. See the bug selection for
+            any issues with this feature.</li>
+            <li>“Letters Remaining” table updates as tiles are used and allows the user to see how many of a certain letter is remaining.</li>
+            <li>“Swap a tile” space is a droppable target that, when a tile a is dropped on it,
+            replaces that tile with a random letter and moves back to the previous location (rack / game board)</li>
+            <li>Tiles can also be swapped – for the current word being played, just drop a tile on top of another tile,
+            and the two will switch places (the old tile returns to the rack and the new tile is played)</li>
+            <li>Three buttons control submitting a word (saving a word to the game board so that you can play multiple words in one game),
+            recalling tiles (this moves all tiles of the CURRENT word back to the rack. It does not mess with played tiles, which are part
+            of saved words), and resetting the game board (which completely resets the board so that a new game of Scrabble can be played instead).</li>
+            <li>Warning and Success messages appear when needed, such as <span class="highlight_centered_success">Start at the star</span> and <br>
+            <span class="highlight_centered_error">Place tiles at right angles</span></li>
+            <li>As a result, for creating one word, start at the middle star, and create a word in a straight line, either up and down or left and right.</li>
+            <li>For creating multiple words, add onto the middle of a word, or to the end of a word like adding an "S" to a created word. See example screen shots below.</li>
+          </ul>
+        </div>
+
+        <br>
+
+        <div class="highlight_centered_smaller">
+          <!-- BUGS, BUGS, BUGS ¯\_(ツ)_/¯ -->
+          <p class="under_line">Current bugs:</p>
+          <ul>
+            <li>Blank tiles are not implemented.</li>
+            <li>Multiple words can cause the displayed word to show up incorrectly, especially when swapping tiles and changing the tiles around.</li>
+            <p class="basic_tab">If bugs occur with the current word, I recommend hitting the “recall tiles” button to reset the CURRENT word while maintaining the game board as is.</p>
+            <li>Adding on to an already created word could create bugs. However, works most of the time.</li>
+            <p class="basic_tab">See above comment about bugs. When a bug occurs, which is possible considering the size of my code at the current point in time,
+            it is best to just hit the "RECALL TILES" button to reset the CURRENT WORD. You may also hit reset board if that does not fix the issue.</p>
+          </ul>
+        </div>
+
+        <br>
+
+        <div class="highlight_centered_smaller">
+          <!-- Screen resolution is important. -->
+          <p class="under_line">The biggest issue is SCREEN RESOLUTION.</p>
+          <p class="left_align_highlight">
+          I have tested the game on a full HD monitor / laptop, and it displays fine.
+          If you test this webpage on a smaller resolution device, it may display weird.
+          There may be some scrolling to get to the tiles, or to the submit / reset buttons.
+          I have tried messing with the Bootstrap grid to fix this, but it is a known problem with my web page.
+          I recommend, if possible, viewing this webpage on a 1920 by 1080 resolution screen.
+          Otherwise trying hitting F11 and make sure the browser is in full screen mode.
+          It will likely display better, although you may need to hit F5 to refresh the page after doing this (the tiles may appear weird otherwise).</p>
+
+          <p class="left_align_highlight">(The main reason for the screen resolution issue is I force the table to
+          be a grid of 15 by 15 cells, each 50 by 50 pixels wide. As a result the table itself requires 750px by 750px.
+          I think this looks the best and reducing the size at all would make the game board tiny and hard to read.
+          If I have time I may try to make a second table that is smaller and force that to display on smaller screens)</p>
+        </div>
+
+        <br>
+
+        <div class="highlight_centered_smaller">
+          <p class="under_line">Example Screenshots can be found below for various games.</p>
+          <ul>
+            <li><a href="img/examples/single_word.png">Playing a single word</a></li>
+            <li><a href="img/examples/two_words.png">Playing two words</a></li>
+            <li><a href="img/examples/so_many_words.png">Playing a ton of words</a></li>
+            <li><a href="img/examples/failure.png">Example error message</a></li>
+            <li><a href="img/examples/success.png">Example success message</a></li>
+            <li><a href="img/examples/custom_alert.png">Custom alert</a> using
+                <a href="https://t4t5.github.io/sweetalert/">Sweet Alert</a> that
+                <a href="img/examples/custom_alert.png">confirms saving a word</a></li>
+          <ul>
+        </div>
+
+        <br>
+
+        <div class="highlight_centered_smaller">
+          <!-- Totally check out V1, although it sucks. -->
+          <p>This is also the second version of my Scrabble implementation.</p>
+          <p>A basic (and very badly broken) one line version can be found <a href="http://downing.io/GUI/assignment9.html">here.</a> </p>
+          <p>My web page is also hosted on GitHub at the <a href="https://github.com/JasonD94/GUI">this Github repository.</a></p>
+        </div>
+    </div>
+    <div class="col-md-3"></div>  <!-- Adding spacing -->
+  </div>
+
+  <!--
+      These are moved to the bottom of the <body> tag to decrease website load time.
+      This stackoverflow post is helpful for this issue:
+      https://stackoverflow.com/questions/6625773/where-should-i-put-the-css-and-javascript-code-in-an-html-webpage
+
+      See Yahoo's best practice rules as well:
+      https://developer.yahoo.com/performance/rules.html#css_top=
+   -->
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins). -->
+  <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+  <!-- Custom Bootstrap with 14 grid! JavaScript file for it. -->
+  <script type='text/javascript' src="js/scrabble/bootstrap.min.js"></script>
+
+</body>
+</html>

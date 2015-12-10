@@ -10,7 +10,7 @@
     MIT Licensed - see http://opensource.org/licenses/MIT for details.
     Anyone may freely use this code. Just don't sue me if it breaks stuff.
     Created: Nov 24, 2015.
-    Last Updated:  Dec 6, 1AM.
+    Last Updated:  Dec 8, 9PM.
 
     This page is for assignment #9, "Scrabble".
 
@@ -74,7 +74,7 @@
       <div class="center_text_images">
 
         <h1 class="name">
-          <span class="highlight_fun">SCRABBLE v2.7.1</span>
+          <span class="highlight_fun">SCRABBLE v2.8.1</span>
         </h1>
 
         <br>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="col-sm-7 col-md-7 col-lg-7">
-          <div class="highlight_centered_smaller"><a href="http://scrabble.hasbro.com/en-us/rules/">RULES FOUND HERE.</a></div>
+          <div class="highlight_centered_smaller"><a href="rules.html">RULES FOUND HERE.</a></div>
         </div>
 
         <div class="col-sm-14 col-md-14 col-lg-14">
@@ -947,7 +947,7 @@
         class="resize_rack"
       -->
       <div class="center_text_images">
-        <img id="the_rack" src="img/scrabble/Scrabble_Rack_flat.resized.png">
+        <img id="the_rack" src="img/scrabble/Scrabble_Rack_flat.resized.png" alt="scrabble rack">
         <div id="rack"></div>   <!-- THIS ID IS REQUIRED TO APPEND THE TILES TO. -->
       </div>
     </div>
@@ -963,41 +963,50 @@
    -->
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins). -->
-  <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
 
   <!-- Custom Bootstrap with 14 grid! JavaScript file for it. -->
-  <script type='text/javascript' src="js/bootstrap.min.js"></script>
+  <script src="js/scrabble/bootstrap.min.js" type="text/javascript"></script>
 
-  <!-- Latest compiled and minified JavaScript -->
-  <!-- <script type='text/javascript' src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
+  <!-- jQuery UI -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
 
-  <!-- jQuery UI Slider and Tab Wigets -->
-  <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <!--  Found this great hack to get jQuery UI working on mobile devices, such as iOS and Android devices!
+        See this URL for the download location: http://touchpunch.furf.com/
+
+        Note that this JS file is open source and dual licensed under the MIT and GPL Version 2 licenses.
+        See the GitHub page here: https://github.com/furf/jquery-ui-touch-punch/
+  -->
+  <script src="js/scrabble/jquery.ui.touch-punch.min.js" type="text/javascript"></script>
 
   <!-- Sweet Alerts! Awesome! -->
-  <script src="js/sweetalert.min.js"></script>
+  <script src="js/scrabble/sweetalert.min.js" type="text/javascript"></script>
 
-  <!-- JS file to handle the scrabble game. -->
-  <script type='text/javascript' src="js/scrabble_v2.js"></script>
+  <!-- JS Global Variables -->
+  <script src="js/scrabble/variables.js" type="text/javascript"></script>
 
-  <!-- Load the header/footer when the page is ready. Also load the validate() function -->
-  <script>
-    /*  This code is from a Stackoverflow post about how to load a HTML document
-        into div in another HTML document.
-        I run this on every page I make so I can change 1 HTML file when I add assignments
-        vs changing 7+ HTML files.
-        From the following URLs:
-        https://learn.jquery.com/using-jquery-core/document-ready/
-        https://stackoverflow.com/questions/8988855/include-another-html-file-in-a-html-file
-    */
-    $( document ).ready(function() {
-      load_pieces_array();        // Load up the default pieces array.
-      load_scrabble_pieces();     // Load up the 7 random Scrabble pieces.
-      load_droppable_targets();   // Load up the targets for the Scrabble pieces.
-      update_remaining_table();   // Update the Letters Remaining table.
-      fill_in_table();            // Add special items to the table.
-    });
-  </script>
+  <!-- Functions that the three buttons run are found here. "Submit", "Recall", "Reset" buttons. -->
+  <script src="js/scrabble/buttons.js" type="text/javascript"></script>
+
+  <!--  JS Utility functions for this Scrabble board game. Has the random function, find position functions,
+        and a few other misc. functions that are used throughout the reset of the JS files. -->
+  <script src="js/scrabble/util.js" type="text/javascript"></script>
+
+  <!--  Score functions that determine the score of the current word / total score if multiple
+        words are played. -->
+  <script src="js/scrabble/score.js" type="text/javascript"></script>
+
+  <!--  Function that runs the jQuery UI draggable code. -->
+  <script src="js/scrabble/draggable.js" type="text/javascript"></script>
+
+  <!--  Function that runs the jQuery UI droppable code.
+        NOTE: this is the heart of the Scrabble logic.
+        TODO: make so much of this code reusable by making functions
+              for the parts that are CONSTANTLY repeated. -->
+  <script src="js/scrabble/droppable.js" type="text/javascript"></script>
+
+  <!-- JS file to load the Scrabble game stuff on first page load after the DOM is loaded. -->
+  <script src="js/scrabble/scrabble_v2.js" type="text/javascript"></script>
 
 </body>
 </html>
