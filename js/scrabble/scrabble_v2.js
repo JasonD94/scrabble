@@ -18,7 +18,7 @@
 
 
 /**
- *      This loads up the inital game board and makes
+ *      This loads up the initial game board and makes
  *      the game playable on the first load of the web page.
  *
  **/
