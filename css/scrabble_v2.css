@@ -342,6 +342,13 @@ button {
   margin-top: 20px;
 }
 
+/**
+ *    Add some spacing between the buttons for when the page resizes
+ */
+.button_spacing {
+  margin-top: 20px;
+}
+
 /*
   This chunk contains all the highlight / text related CSS.
   Mostly center / left / right alignment and changing the color / font of text.
